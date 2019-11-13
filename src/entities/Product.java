@@ -6,9 +6,9 @@ public class Product {
 	private Double price;
 	private Integer quantity;
 	
-	public Product()
+	public Product()	
 	{
-	
+		
 	}
 	
 	public Product(String name, Double price, Integer quantity)

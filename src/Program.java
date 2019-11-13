@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
 
 import entities.Product;
 
@@ -11,9 +15,15 @@ public class Program {
 
 	public static void main(String[] args) {
 		
-		String path = "c:\\temp\\in.csv";
-		Product p = new Product();
+		Locale.setDefault(Locale.US);
+		Scanner tec = new Scanner(System.in);
+		
+		System.out.print("Enter file path: ");
+		String path = tec.nextLine();
+		
 		File file = new File(path);
+		List<Product> productList = new ArrayList<>();
+		
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(path)))
 		{
@@ -21,46 +31,54 @@ public class Program {
 			
 			boolean sucess = new File(file.getParent() + "\\out").mkdir();
 			System.out.println("Arquivo criado com sucesso: " +sucess);
-			String [] vect = line.split(",");
-			p.setName(vect[0]);
-			p.setPrice(Double.parseDouble(vect[1]));
-			p.setQuantity(Integer.parseInt(vect[2]));
+			
+			
 			
 			while(line != null)
 			{
+				String [] s = line.split(",");
+				String name = s[0];
+				Double price = Double.parseDouble(s[1]);
+				int quantity = Integer.parseInt(s[2]);
+								 		
+				productList.add(new Product(name, price, quantity));
 				
-				for(int i = 0; i < 20; i++)
+				try(BufferedWriter bw = new BufferedWriter(new FileWriter("c:\\temp\\out\\sumary.csv")))
 				{
-					p.setName(vect[i + 3]);
-					p.setPrice(Double.parseDouble(vect[i + 4]));
-					p.setQuantity(Integer.parseInt(vect[i + 5]));
-					line = br.readLine();
-				}
-					try(BufferedWriter bw = new BufferedWriter(new FileWriter("c:\\temp\\out\\sumary.csv", true)))
+					for(Product prod : productList)
 					{
-						bw.write(p.getName());
-						bw.write((int) p.total());
+						bw.write(prod.getName());
+						bw.write(",");
+						bw.write(String.format("%.2f", prod.total()));
+						
 						bw.newLine();
 					}
-				
+				}
+										
+					line = br.readLine();
 			}
 			
-			BufferedReader br2 = new BufferedReader(new FileReader("c:\\temp\\out\\sumary.csv"));
-			String result = br2.readLine();
+
 			
-			while(result != null)
+			
+			try(BufferedReader br2 = new BufferedReader(new FileReader("c:\\temp\\out\\sumary.csv")))
 			{
-				System.out.println(result);
-				br2.readLine();
+				String result = br2.readLine();
+				
+				while(result != null)
+				{
+					System.out.println(result);
+					 result = br2.readLine();
+				}
 			}
-			
-			br2.close();
+		
 		}
 		catch(IOException e)
 		{
 			System.out.println("Error: " + e.getMessage());
 		}
 		
+	
 	}
 	
 
